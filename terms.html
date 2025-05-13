@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions - Retina</title>
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #3700B3;
+            --secondary: #03DAC6;
+            --dark: #121212;
+            --light: #F5F5F5;
+            --danger: #CF6679;
+            --text: #E1E1E1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            background: transparent;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .hero {
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(98, 0, 234, 0.2) 0%, rgba(18, 18, 18, 1) 70%);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-col h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-col ul li a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s;
+            opacity: 0.7;
+        }
+        
+        .footer-col ul li a:hover {
+            color: var(--secondary);
+            opacity: 1;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Terms page specific */
+        .terms-content {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+        
+        .terms-content h2 {
+            margin: 30px 0 15px;
+            color: var(--secondary);
+        }
+        
+        .terms-content h2:first-child {
+            margin-top: 0;
+        }
+        
+        .terms-content ol, .terms-content ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .terms-content li {
+            margin-bottom: 10px;
+        }
+        
+        .terms-note {
+            background-color: rgba(3, 218, 198, 0.1);
+            border-left: 3px solid var(--secondary);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .terms-warning {
+            background-color: rgba(207, 102, 121, 0.1);
+            border-left: 3px solid var(--danger);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 60px 0 30px;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#03DAC6" stroke-width="2" />
+                    <circle cx="50" cy="50" r="20" fill="#6200EA" />
+                    <path d="M50 20 C 70 20, 80 40, 80 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+                    <path d="M50 20 C 30 20, 20 40, 20 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+                </svg>
+                <span class="logo-text">RETINA</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="premium.html">Premium</a></li>
+                <li><a href="terms.html">Terms</a></li>
+                <li><a href="#" class="btn btn-outline">Login</a></li>
+                <li><a href="#" class="btn btn-primary">Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Terms and Conditions</h1>
+                <p>Please read carefully before accessing or using the Retina platform. By using our services, you agree to be bound by these terms and conditions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terms Content -->
+    <div class="container">
+        <div class="terms-content">
+            <h2>TERMS AND CONDITIONS OF SERVICE</h2>
+            <p>Last Updated: May 1, 2025</p>
+            <p>Welcome to Retina. By accessing or using the Retina platform (the "Service"), you agree to be bound by the following terms and conditions. Please read carefully before registering. Retina is a product of the independent consciousness interchange network ("we," "our," or "Retina Inc.").</p>
+            
+            <h2>1. ELIGIBILITY</h2>
+            <p>By registering, you affirm that you are at least 18 years old and of sound mental capacity. Retina is not liable for identity complications, psychological side effects, or existential distress that may occur from use of the Service.</p>
+            
+            <h2>2. ACCOUNT & AVATAR CREATION</h2>
+            <p>Upon registration, your physical body and consciousness profile ("Avatar") are permanently entered into the Retina network database.</p>
+            <ul>
+                <li><strong>Free Tier:</strong> Avatar cannot be deleted, unlisted, or made private.</li>
+                <li><strong>Premium Tier:</strong> Subscribers may enable lockout privileges, avatar privacy, selective access, and account withdrawal.</li>
+            </ul>
+            <div class="terms-note">
+                <p><strong>Note:</strong> Deleting your account without Premium access is not possible, even in the event of legal request, bodily death, or mental collapse.</p>
+            </div>
+            
+            <h2>3. BODY SWAP MECHANICS</h2>
+            <p>Retina enables consensual consciousness interchange through the BodySwap™ Protocol. Users may inhabit other listed Avatars in exchange for their own. All swaps are reciprocal.</p>
+            <ul>
+                <li><strong>Free Users</strong> will be assigned to random active avatars in the network.</li>
+                <li><strong>Premium Users</strong> may select from available avatars by compatibility, consent rating, or occupation tier.</li>
+            </ul>
+            <p>Wristwatch Device ("The Anchor") will auto-materialize on the host body upon successful swap. The Anchor HUD includes:</p>
+            <ul>
+                <li>Remaining swaps or "Returns"</li>
+                <li>Cooldown duration between swaps</li>
+                <li>Time remaining in current host</li>
+                <li>Neural sync percentage</li>
+            </ul>
+            <div class="terms-warning">
+                <p><strong>Warning:</strong> Tampering with or damaging the Anchor may result in:</p>
+                <ul>
+                    <li>Permanent loss of access to original body</li>
+                    <li>Desynchronization symptoms (memory leak, psychogenic seizures, bleeding hallucinations)</li>
+                    <li>Trapping in an incompatible host</li>
+                    <li>Avatar corruption or ghosting (partial consciousness duality)</li>
+                </ul>
+            </div>
+            
+            <h2>4. CONSENT AND LIABILITY WAIVER</h2>
+            <p>By using Retina, you acknowledge and irrevocably agree to the following:</p>
+            <ul>
+                <li>You consent to bodily occupation by other registered users.</li>
+                <li>You understand that extended use may result in identity erosion, derealization, or neural misalignment.</li>
+                <li>Retina is not liable for:
+                    <ul>
+                        <li>Crimes committed while you inhabit another body or while another inhabits yours.</li>
+                        <li>Psychological effects stemming from host trauma, repressed memories, or inherited emotions.</li>
+                        <li>Death, injury, or irreversible neurological disorder caused by unsupervised usage.</li>
+                    </ul>
+                </li>
+                <li>You waive the right to sue Retina Inc., its developers, affiliates, or hosts for any harm—mental, physical, spiritual, or legal—arising from your usage.</li>
+            </ul>
+            
+            <h2>5. CONDITION OF USE</h2>
+            <ul>
+                <li>Users are responsible for actions taken in any body they inhabit.</li>
+                <li>Users must not engage in malicious swaps, such as:
+                    <ul>
+                        <li>Using another's body for illegal activity</li>
+                        <li>Swapping repeatedly to avoid consequences</li>
+                        <li>Hijacking locked Premium bodies via exploit</li>
+                    </ul>
+                </li>
+                <li>Violators may face forced sync wipes, IP banishment, or permanent blacklisting from the body network.</li>
+            </ul>
+            
+            <h2>6. PREMIUM SERVICES</h2>
+            <p>Premium subscription provides:</p>
+            <ul>
+                <li>Full avatar privacy control</li>
+                <li>Selective swaps (by job, appearance, criminal record, etc.)</li>
+                <li>Return token resets</li>
+                <li>Body restoration insurance (conditions apply)</li>
+            </ul>
+            <div class="terms-note">
+                <p>Premium status is non-refundable. Any downgrade will lock your avatar into the system indefinitely.</p>
+            </div>
+            
+            <h2>7. DATA POLICY</h2>
+            <p>Retina logs all bodily swaps, anchor usage, and neural sync rates for internal optimization.</p>
+            <p>You agree to allow Retina to:</p>
+            <ul>
+                <li>Collect biodata from your host experiences</li>
+                <li>Use anonymized consciousness analytics for system improvement</li>
+                <li>Store fragmented memories to refine compatibility algorithms</li>
+            </ul>
+            
+            <h2>8. TERMINATION</h2>
+            <p>We reserve the right to suspend or terminate access to any user who:</p>
+            <ul>
+                <li>Attempts to exploit anchor functions</li>
+                <li>Tries to forcibly occupy restricted avatars</li>
+                <li>Engages in philosophical subversion of identity boundaries</li>
+            </ul>
+            
+            <h2>9. DISCLAIMERS</h2>
+            <ul>
+                <li>Retina is not a medical or spiritual service.</li>
+                <li>Use at your own risk.</li>
+                <li>Memories from hosts may permanently overwrite personal identity.</li>
+                <li>Continued use may result in emotional bleed-through or ghost-host phenomena.</li>
+            </ul>
+            
+            <h2>10. AGREEMENT</h2>
+            <p>By clicking "Accept," you confirm that you have read, understood, and agreed to these Terms and Conditions, including the Consent to Bodily Occupation and Identity Loss clause.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>Retina</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Our Technology</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Kit</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Free Swaps</a></li>
+                        <li><a href="premium.html">Premium Access</a></li>
+                        <li><a href="#">Corporate Empathy Programs</a></li>
+                        <li><a href="#">Research Partnerships</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Technical Support</a></li>
+                        <li><a href="#">Emergency Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Data Request</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Retina Inc. All rights reserved. Retina and BodySwap™ Protocol are registered trademarks of the independent consciousness interchange network.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
