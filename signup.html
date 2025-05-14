@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Retina</title>
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #3700B3;
+            --secondary: #03DAC6;
+            --dark: #121212;
+            --light: #F5F5F5;
+            --danger: #CF6679;
+            --text: #E1E1E1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(18, 18, 18, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            background: transparent;
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 40px;
+            margin-top: 20px;
+        }
+        
+        /* Signup specific styles */
+        .signup-section {
+            min-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0;
+        }
+        
+        .signup-container {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .signup-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .signup-header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(3, 218, 198, 0.3);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group input {
+            margin-top: 5px;
+            margin-right: 10px;
+        }
+        
+        .terms-link {
+            color: var(--secondary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Modal (popup) styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--dark);
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 90%;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .close-modal:hover {
+            opacity: 1;
+        }
+        
+        .terms-content h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+        
+        .terms-content p {
+            margin-bottom: 15px;
+        }
+        
+        .terms-content ul {
+            margin: 15px 0 15px 20px;
+        }
+        
+        .terms-content li {
+            margin-bottom: 10px;
+        }
+        
+        .terms-warning {
+            background-color: rgba(207, 102, 121, 0.1);
+            border-left: 3px solid var(--danger);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        /* Success message and launch button */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: rgba(3, 218, 198, 0.1);
+            border-radius: 10px;
+        }
+        
+        .success-message h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .launch-btn-container {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .launch-btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.8rem;
+            padding: 20px 60px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 25px rgba(98, 0, 234, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        .launch-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(98, 0, 234, 0.6);
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(98, 0, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(98, 0, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(98, 0, 234, 0);
+            }
+        }
+        
+        /* Footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-col h4 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-col ul li a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s;
+            opacity: 0.7;
+        }
+        
+        .footer-col ul li a:hover {
+            color: var(--secondary);
+            opacity: 1;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .signup-container {
+                padding: 30px 20px;
+            }
+            
+            .signup-header h1 {
+                font-size: 2rem;
+            }
+            
+            .launch-btn {
+                padding: 15px 40px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#03DAC6" stroke-width="2" />
+                    <circle cx="50" cy="50" r="20" fill="#6200EA" />
+                    <path d="M50 20 C 70 20, 80 40, 80 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+                    <path d="M50 20 C 30 20, 20 40, 20 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+                </svg>
+                <span class="logo-text">RETINA</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="premium.html">Premium</a></li>
+                <li><a href="terms.html">Terms</a></li>
+                <li><a href="#" class="btn btn-outline">Login</a></li>
+                <li><a href="signup.html" class="btn btn-primary">Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Signup Section -->
+    <section class="signup-section">
+        <div class="container">
+            <div class="signup-container">
+                <div class="signup-header">
+                    <h1>Join the Consciousness Revolution</h1>
+                    <p>Create your account to start experiencing life through new eyes.</p>
+                </div>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdate">Date of Birth</label>
+                        <input type="date" id="birthdate" name="birthdate" required>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="termsCheck" name="termsCheck" required>
+                        <label for="termsCheck">I agree to the <span class="terms-link" id="openTerms">Terms and Conditions</span> and acknowledge the irreversible nature of consciousness transferrence technology.</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="ageCheck" name="ageCheck" required>
+                        <label for="ageCheck">I confirm that I am at least 18 years of age and legally able to consent to temporary consciousness interchange.</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newsletterCheck" name="newsletterCheck">
+                        <label for="newsletterCheck">I would like to receive updates about new hosts, features, and promotions from Retina.</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">Create Account</button>
+                    
+                    <!-- Success message (initially hidden) -->
+                    <div class="success-message" id="successMessage">
+                        <h3>Account Created Successfully!</h3>
+                        <p>Your neural profile is now ready. Would you like to start your first BodySwap™ experience?</p>
+                    </div>
+                    
+                    <!-- Launch button (initially hidden) -->
+                    <div class="launch-btn-container" id="launchBtnContainer">
+                        <button class="btn launch-btn">Launch BodySwap™</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terms and Conditions Modal -->
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeTerms">&times;</span>
+            <div class="terms-content">
+                <h2>Retina BodySwap™ Protocol - Terms and Conditions</h2>
+                
+                <p>By creating an account with Retina and using our BodySwap™ Protocol, you agree to the following terms and conditions:</p>
+                
+                <h3>1. Consent and Capacity</h3>
+                <p>You must be at least 18 years of age and possess the legal capacity to consent to temporary consciousness interchange. Retina reserves the right to verify your age and identity.</p>
+                
+                <h3>2. Reciprocal Exchange Agreement</h3>
+                <p>All body swaps on our platform are reciprocal, meaning that when you occupy someone else's body, they simultaneously occupy yours. You agree to respect the temporary host body and abide by the following restrictions:</p>
+                <ul>
+                    <li>No permanent modifications to the host body (including but not limited to tattoos, piercings, or cosmetic procedures)</li>
+                    <li>No engaging in high-risk activities without prior authorization from the original consciousness</li>
+                    <li>No illegal activities or violations of local laws while in the host body</li>
+                    <li>No attempting to access private information, accounts, or relationships of the host</li>
+                </ul>
+                
+                <h3>3. The Anchor Device</h3>
+                <p>The Anchor wristwatch device will materialize on your host body upon successful swap. You agree to:</p>
+                <ul>
+                    <li>Not tamper with, remove, or damage the Anchor device</li>
+                    <li>Respect the time limits imposed by your subscription tier</li>
+                    <li>Utilize the emergency return function only in genuine emergencies</li>
+                </ul>
+                
+                <h3>4. Privacy and Confidentiality</h3>
+                <p>You agree to respect the privacy of your swap partner and not disclose personal information discovered during your experience. All experiences are subjected to our neural firewall that prevents access to deeply personal memories and sensitive information.</p>
+                
+                <h3>5. Health and Safety</h3>
+                <p>You must disclose any medical conditions that may affect the swap experience. Retina is not responsible for physical discomfort arising from pre-existing conditions of either participant.</p>
+                
+                <div class="terms-warning">
+                    <p><strong>Warning:</strong> Although extremely rare, consciousness transfer may result in temporary side effects including but not limited to: disorientation, mild headaches, phantom sensations, or temporary memory echoes. By accepting these terms, you acknowledge and accept these potential risks.</p>
+                </div>
+                
+                <h3>6. Limitation of Liability</h3>
+                <p>Retina is not liable for any actions taken by other users while occupying your body, provided those actions do not violate our code of conduct or these terms and conditions. All users agree to our consciousness insurance policy that covers damages resulting from misuse of host bodies.</p>
+                
+                <h3>7. Cooldown Period</h3>
+                <p>For your neural health and safety, a mandatory cooldown period of 24 hours is enforced between swaps. Premium users may have reduced cooldown periods as specified in their subscription details.</p>
+                
+                <h3>8. Termination of Service</h3>
+                <p>Retina reserves the right to terminate service for users who violate these terms or our community guidelines. In the event of termination, any ongoing consciousness interchange will be safely reversed before account deactivation.</p>
+                
+                <p>By checking the agreement box, you acknowledge that you have read, understood, and agree to all the terms and conditions outlined above.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>Retina</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Our Technology</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press Kit</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Free Swaps</a></li>
+                        <li><a href="premium.html">Premium Access</a></li>
+                        <li><a href="#">Corporate Empathy Programs</a></li>
+                        <li><a href="#">Research Partnerships</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Technical Support</a></li>
+                        <li><a href="#">Emergency Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Data Request</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Retina Inc. All rights reserved. Retina and BodySwap™ Protocol are registered trademarks of the independent consciousness interchange network.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Open Terms and Conditions Modal
+        document.getElementById('openTerms').addEventListener('click', function() {
+            document.getElementById('termsModal').style.display = 'flex';
+        });
+        
+        // Close Terms and Conditions Modal
+        document.getElementById('closeTerms').addEventListener('click', function() {
+            document.getElementById('termsModal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target == document.getElementById('termsModal')) {
+                document.getElementById('termsModal').style.display = 'none';
+            }
+        });
+        
+        // Form submission
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Basic validation
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // Show success message and launch button
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('launchBtnContainer').style.display = 'block';
+            
+            // Hide the form fields and submit button
+            const formElements = document.querySelectorAll('.form-group, .checkbox-group, form > .btn');
+            formElements.forEach(element => {
+                element.style.display = 'none';
+            });
+            
+            // Scroll to the success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
