@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BodySwap™ Launch - Retina</title>
+    <style>
+        :root {
+            --primary: #6200EA;
+            --primary-dark: #3700B3;
+            --secondary: #03DAC6;
+            --dark: #121212;
+            --light: #F5F5F5;
+            --danger: #CF6679;
+            --text: #E1E1E1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+        
+        /* Section containers with proper layering */
+        .intro-section,
+        .scanning-section,
+        .countdown-section,
+        .completion-section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        
+        .active-section {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Logo styling */
+        .retina-logo {
+            text-align: center;
+        }
+        
+        .logo-text {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .logo-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Neural scan effects */
+        .neural-scan {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(3, 218, 198, 0.1) 0%, rgba(98, 0, 234, 0.1) 100%);
+            opacity: 0;
+            z-index: 1;
+            transition: opacity 1s ease;
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            top: 0;
+            opacity: 0;
+            box-shadow: 0 0 15px var(--secondary), 0 0 30px var(--secondary);
+            z-index: 2;
+            transition: opacity 0.5s ease;
+        }
+        
+        .brain-outline {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s ease;
+        }
+        
+        .brain-outline.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Status indicators */
+        .status-container {
+            position: absolute;
+            bottom: 15%;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .status-text {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .progress-container {
+            width: 60%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Particle system */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background-color: var(--primary);
+            opacity: 0;
+            transform-origin: left center;
+            transition: opacity 1s ease;
+        }
+        
+        /* Pulse animation */
+        .pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: rgba(3, 218, 198, 0.1);
+            opacity: 0;
+            z-index: 3;
+            transition: opacity 0.5s ease;
+        }
+        
+        .pulse.active {
+            opacity: 1;
+            animation: pulse-animation 2s infinite;
+        }
+        
+        @keyframes pulse-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.8;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        /* Flash effect */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.1s ease;
+        }
+        
+        /* Countdown section */
+        .countdown {
+            font-size: 12rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-shadow: 0 0 20px var(--secondary);
+            z-index: 20;
+        }
+        
+        .phase-text {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            width: 80%;
+            color: var(--secondary);
+            margin-bottom: 40px;
+        }
+        
+        .warning-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(207, 102, 121, 0.2);
+            opacity: 0;
+            z-index: 4;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Completion section */
+        .body-ready {
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 50px;
+        }
+        
+        .continue-btn {
+            padding: 15px 40px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .continue-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+        }
+        
+        /* Anchor watch */
+        .anchor-watch {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+            width: 200px;
+            height: 80px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 25;
+        }
+        
+        .anchor-text {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: var(--secondary);
+        }
+        
+        .host-timer {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <!-- Introduction Section -->
+    <div class="intro-section active-section" id="intro-section">
+        <div class="retina-logo">
+            <svg width="150" height="150" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#03DAC6" stroke-width="2" />
+                <circle cx="50" cy="50" r="20" fill="#6200EA" />
+                <path d="M50 20 C 70 20, 80 40, 80 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+                <path d="M50 20 C 30 20, 20 40, 20 50" stroke="#03DAC6" stroke-width="3" fill="none" />
+            </svg>
+            <div class="logo-text" id="logo-text">RETINA</div>
+        </div>
+    </div>
+    
+    <!-- Scanning Section -->
+    <div class="scanning-section" id="scanning-section">
+        <div class="brain-outline" id="brain-outline">
+            <svg width="300" height="300" viewBox="0 0 200 200">
+                <path d="M100,30 C130,30 150,50 150,80 C150,110 130,140 100,140 C70,140 50,110 50,80 C50,50 70,30 100,30 Z" fill="none" stroke="#03DAC6" stroke-width="2" />
+                <path d="M100,40 C70,40 60,60 60,80 C60,100 70,120 100,120 C130,120 140,100 140,80 C140,60 130,40 100,40 Z" fill="none" stroke="#03DAC6" stroke-width="2" />
+                <path d="M100,50 C80,50 70,65 70,80 C70,95 80,110 100,110 C120,110 130,95 130,80 C130,65 120,50 100,50 Z" fill="none" stroke="#03DAC6" stroke-width="1.5" />
+                <line x1="50" y1="80" x2="150" y2="80" stroke="#03DAC6" stroke-width="1" stroke-dasharray="5,5" />
+                <line x1="100" y1="30" x2="100" y2="140" stroke="#03DAC6" stroke-width="1" stroke-dasharray="5,5" />
+            </svg>
+        </div>
+    </div>
+    
+    <!-- Countdown Section -->
+    <div class="countdown-section" id="countdown-section">
+        <div class="phase-text">CONSCIOUSNESS TRANSFER INITIATING</div>
+        <div class="countdown">3</div>
+    </div>
+    
+    <!-- Completion Section -->
+    <div class="completion-section" id="completion-section">
+        <div class="body-ready">HOST BODY READY</div>
+        <button class="continue-btn">ENTER HOST</button>
+    </div>
+    
+    <!-- Status indicators (bottom of screen) -->
+    <div class="status-container">
+        <div class="status-text" id="status-text">Initializing Neural Interface...</div>
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+    
+    <!-- Background effects -->
+    <div class="neural-scan" id="neural-scan"></div>
+    <div class="scan-line" id="scan-line"></div>
+    <div class="particles" id="particles"></div>
+    <div class="pulse" id="pulse"></div>
+    <div class="warning-pulse" id="warning-pulse"></div>
+    <div class="flash" id="flash"></div>
+    
+    <!-- Anchor watch -->
+    <div class="anchor-watch" id="anchor-watch">
+        <div class="anchor-text">ANCHOR SYSTEM ACTIVE</div>
+        <div class="host-timer">24:00:00</div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start the animation sequence
+            setTimeout(startAnimation, 1000);
+            
+            // Create particles
+            createParticles();
+            
+            // Create neural connections
+            createNeuralConnections();
+        });
+        
+        function startAnimation() {
+            // Show logo text
+            const logoText = document.getElementById('logo-text');
+            logoText.classList.add('active');
+            
+            // Start neural scan effect
+            setTimeout(() => {
+                fadeIn(document.getElementById('neural-scan'));
+                
+                // Show status text and progress
+                setTimeout(() => {
+                    fadeIn(document.getElementById('status-text'));
+                    fadeIn(document.getElementById('progress-container'));
+                    animateProgress();
+                    
+                    // Start scan line animation
+                    setTimeout(() => {
+                        animateScanLine();
+                    }, 800);
+                }, 800);
+            }, 1200);
+        }
+        
+        function animateScanLine() {
+            const scanLine = document.getElementById('scan-line');
+            scanLine.style.opacity = '1';
+            
+            let position = 0;
+            const interval = setInterval(() => {
+                position += 1;
+                scanLine.style.top = position + '%';
+                
+                if (position >= 100) {
+                    clearInterval(interval);
+                    scanLine.style.opacity = '0';
+                    
+                    // Switch to scanning section
+                    setTimeout(() => {
+                        switchToSection('scanning-section');
+                        
+                        // Show brain outline
+                        const brainOutline = document.getElementById('brain-outline');
+                        brainOutline.classList.add('active');
+                        
+                        // Show pulse effect
+                        setTimeout(() => {
+                            const pulse = document.getElementById('pulse');
+                            pulse.classList.add('active');
+                            
+                            // Update status text
+                            updateStatusText('Neural Profile Generated', 2000);
+                            
+                            // Start the next phase
+                            setTimeout(startCountdown, 3000);
+                        }, 1000);
+                    }, 800);
+                }
+            }, 30);
+        }
+        
+        function animateProgress() {
+            const progressBar = document.getElementById('progress-bar');
+            let width = 0;
+            
+            const interval = setInterval(() => {
+                width += 1;
+                progressBar.style.width = width + '%';
+                
+                if (width >= 100) {
+                    clearInterval(interval);
+                    
+                    // Update status when progress is complete
+                    updateStatusText('Neural Interface Active', 1000);
+                }
+            }, 50);
+        }
+        
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 5 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Random position
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                particlesContainer.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.style.opacity = '0.5';
+                    animateParticle(particle);
+                }, Math.random() * 5000);
+            }
+        }
+        
+        function animateParticle(particle) {
+            const speed = Math.random() * 2 + 1;
+            let posX = parseFloat(particle.style.left);
+            let posY = parseFloat(particle.style.top);
+            
+            // Random direction
+            const dirX = Math.random() > 0.5 ? 1 : -1;
+            const dirY = Math.random() > 0.5 ? 1 : -1;
+            
+            setInterval(() => {
+                posX += speed * 0.1 * dirX;
+                posY += speed * 0.1 * dirY;
+                
+                // Loop around edges
+                if (posX > 100) posX = 0;
+                if (posX < 0) posX = 100;
+                if (posY > 100) posY = 0;
+                if (posY < 0) posY = 100;
+                
+                particle.style.left = posX + '%';
+                particle.style.top = posY + '%';
+            }, 50);
+        }
+        
+        function createNeuralConnections() {
+            const container = document.getElementById('particles');
+            
+            for (let i = 0; i < 30; i++) {
+                const connection = document.createElement('div');
+                connection.classList.add('neural-connection');
+                
+                // Random position and angle
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                const length = Math.random() * 100 + 50;
+                const angle = Math.random() * 360;
+                
+                connection.style.left = startX + '%';
+                connection.style.top = startY + '%';
+                connection.style.width = length + 'px';
+                connection.style.transform = `rotate(${angle}deg)`;
+                
+                container.appendChild(connection);
+                
+                // Delayed appearance
+                setTimeout(() => {
+                    connection.style.opacity = '0.3';
+                    // Randomly make connections pulse
+                    if (Math.random() > 0.7) {
+                        setInterval(() => {
+                            connection.style.opacity = Math.random() * 0.5;
+                        }, Math.random() * 2000 + 1000);
+                    }
+                }, Math.random() * 8000);
+            }
+        }
+        
+        function startCountdown() {
+            // Hide previous elements
+            fadeOut(document.getElementById('status-text'));
+            fadeOut(document.getElementById('progress-container'));
+            
+            // Switch to countdown section
+            switchToSection('countdown-section');
+            
+            // Start countdown from 3
+            let count = 3;
+            const countdown = document.querySelector('.countdown');
+            
+            const countInterval = setInterval(() => {
+                count--;
+                countdown.textContent = count;
+                
+                // Flash effect
+                const flash = document.getElementById('flash');
+                flash.style.opacity = '1';
+                setTimeout(() => {
+                    flash.style.opacity = '0';
+                }, 100);
+                
+                if (count <= 0) {
+                    clearInterval(countInterval);
+                    
+                    // Final phase
+                    setTimeout(() => {
+                        completeTransfer();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+        
+        function completeTransfer() {
+            // Warning pulse effect
+            const warningPulse = document.getElementById('warning-pulse');
+            warningPulse.style.opacity = '1';
+            
+            setTimeout(() => {
+                warningPulse.style.opacity = '0';
+                
+                // Big flash
+                const flash = document.getElementById('flash');
+                flash.style.opacity = '1';
+                
+                setTimeout(() => {
+                    flash.style.opacity = '0';
+                    
+                    // Switch to completion section
+                    switchToSection('completion-section');
+                    
+                    // Show anchor watch
+                    const anchor = document.getElementById('anchor-watch');
+                    anchor.style.opacity = '1';
+                    anchor.style.transform = 'translateY(0)';
+                    
+                    // Add event listener to continue button
+                    const continueBtn = document.querySelector('.continue-btn');
+                    continueBtn.addEventListener('click', function() {
+                        // Redirect to the experience page
+                        window.location.href = 'experience.html';
+                    });
+                }, 500);
+            }, 1000);
+        }
+        
+        function updateStatusText(text, duration) {
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = text;
+            
+            if (duration) {
+                setTimeout(() => {
+                    statusText.style.opacity = '0';
+                    setTimeout(() => {
+                        statusText.textContent = '';
+                        statusText.style.opacity = '1';
+                    }, 500);
+                }, duration);
+            }
+        }
+        
+        function switchToSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.intro-section, .scanning-section, .countdown-section, .completion-section');
+            sections.forEach(section => {
+                section.classList.remove('active-section');
+            });
+            
+            // Show the requested section
+            document.getElementById(sectionId).classList.add('active-section');
+        }
+        
+        function fadeIn(element, duration = 1) {
+            if (!element) return;
+            element.style.transition = `opacity ${duration}s ease`;
+            element.style.opacity = '1';
+        }
+        
+        function fadeOut(element, duration = 0.5) {
+            if (!element) return;
+            element.style.transition = `opacity ${duration}s ease`;
+            element.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>

@@ -33,10 +33,10 @@
             align-items: center;
             justify-content: center;
             flex-grow: 1;
-         
+
             font-family: Poppins;
             font-weight: 600;
-         
+
         }
 
         #resultsPage {
@@ -86,7 +86,7 @@
             color: #34a853;
         }
 
-  
+
         .g6 {
             color: #ea4335;
         }
@@ -460,7 +460,7 @@
             <div class="tabs-container">
                 <div class="tabs">
                     <div class="tab active">
-                        
+
                         All
                     </div>
                     <div class="tab">
@@ -596,43 +596,43 @@
                 return;
             }
 
-const pages = [
-    { 
-        title: 'Retina - A New Vision of Empathy', 
-        url: 'retina.html', 
-        displayUrl: 'https://www.retina.com', 
-        favicon: "https://www.google.com/s2/favicons?domain=visiontech.com", 
-        description: 'Explore the innovative vision of Retina, a platform redefining empathy and connection in the digital age.' 
-    },
-    { 
-        title: 'PLEASE STOP USING RETINA – You don\'t know what you\'re giving up - r/ConsciousnessSwapWarnings', 
-        url: 'page1.html', 
-        displayUrl: 'Greddit - r/ConsciousnessSwapWarnings', 
-        favicon: "https://www.google.com/s2/favicons?domain=visiontech.com", 
-        description: 'I don\'t know how long this will stay up before it gets taken down (again), so I\'ll keep it short...' 
-    },
-    { 
-        title: 'You wanted proof. Fine. Just remember: you asked. -  r/RetinaTruth', 
-        url: 'page2.html', 
-        displayUrl: 'Greddit - r/RetinaTruth', 
-        favicon: "https://www.google.com/s2/favicons?domain=visiontech.com", 
-        description: 'People called me paranoid. Conspiracy-pilled. But you wanted proof?...' 
-    },
-    { 
-        title: 'Something\'s wrong with my body after a swap. - r/RetinaTruth', 
-        url: 'page3.html', 
-        displayUrl: 'Greddit - r/RetinaTruth', 
-        favicon: "https://www.google.com/s2/favicons?domain=visiontech.com", 
-        description: 'I was swapped into a body that was speaking Spanish. I don\'t even speak Spanish...' 
-    },
-    { 
-        title: 'Who actually made Retina? - r/FutureTech', 
-        url: 'page4.html', 
-        displayUrl: 'Greddit - r/FutureTech', 
-        favicon: "https://www.google.com/s2/favicons?domain=visiontech.com", 
-        description: 'Curious how Retina even works. It feels too advanced...' 
-    }
-];
+            const pages = [
+                {
+                    title: 'Retina - A New Vision of Empathy',
+                    url: 'retina.html',
+                    displayUrl: 'https://www.retina.com',
+                    favicon: "https://www.google.com/s2/favicons?domain=visiontech.com",
+                    description: 'Explore the innovative vision of Retina, a platform redefining empathy and connection in the digital age.'
+                },
+                {
+                    title: 'PLEASE STOP USING RETINA – You don\'t know what you\'re giving up - r/ConsciousnessSwapWarnings',
+                    url: 'page1.html',
+                    displayUrl: 'Greddit - r/ConsciousnessSwapWarnings',
+                    favicon: "https://www.google.com/s2/favicons?domain=visiontech.com",
+                    description: 'I don\'t know how long this will stay up before it gets taken down (again), so I\'ll keep it short...'
+                },
+                {
+                    title: 'You wanted proof. Fine. Just remember: you asked. -  r/RetinaTruth',
+                    url: 'page2.html',
+                    displayUrl: 'Greddit - r/RetinaTruth',
+                    favicon: "https://www.google.com/s2/favicons?domain=visiontech.com",
+                    description: 'People called me paranoid. Conspiracy-pilled. But you wanted proof?...'
+                },
+                {
+                    title: 'Something\'s wrong with my body after a swap. - r/RetinaTruth',
+                    url: 'page3.html',
+                    displayUrl: 'Greddit - r/RetinaTruth',
+                    favicon: "https://www.google.com/s2/favicons?domain=visiontech.com",
+                    description: 'I was swapped into a body that was speaking Spanish. I don\'t even speak Spanish...'
+                },
+                {
+                    title: 'Who actually made Retina? - r/FutureTech',
+                    url: 'page4.html',
+                    displayUrl: 'Greddit - r/FutureTech',
+                    favicon: "https://www.google.com/s2/favicons?domain=visiontech.com",
+                    description: 'Curious how Retina even works. It feels too advanced...'
+                }
+            ];
 
             const fakeResults = [
                 {
@@ -682,7 +682,7 @@ const pages = [
             displayResults.forEach(result => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item';
-               resultItem.innerHTML = `
+                resultItem.innerHTML = `
     <div class="result-url">
         <img src="${result.favicon}" alt="" class="result-favicon">
         <span>${result.displayUrl}</span>

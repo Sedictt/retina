@@ -689,6 +689,10 @@
             // Show success message and launch button
             document.getElementById('successMessage').style.display = 'block';
             document.getElementById('launchBtnContainer').style.display = 'block';
+           
+document.querySelector('.launch-btn').addEventListener('click', function() {
+    window.location.href = 'launch-animation.html';
+});
             
             // Hide the form fields and submit button
             const formElements = document.querySelectorAll('.form-group, .checkbox-group, form > .btn');
