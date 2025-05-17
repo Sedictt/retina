@@ -306,8 +306,8 @@
         
         #warning-text {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 6rem;
+            right: 1rem;
             color: #f00;
             font-size: 0.8rem;
             text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
@@ -449,43 +449,160 @@
             #header {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 10px;
             }
             
             #header h1 {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
                 font-size: 1.2rem;
+                width: 100%;
+                text-align: center;
+            }
+            
+            #status, #timestamp {
+                font-size: 0.8rem;
+                width: 100%;
+                text-align: center;
             }
             
             #data-overlay {
                 font-size: 0.7rem;
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.7);
+                border-radius: 4px;
+            }
+            
+            #visualization-mode {
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                justify-content: flex-end;
+            }
+            
+            #visualization-mode button {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+                margin-left: 0;
             }
             
             #audio-controls {
                 flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            
+            #audio-controls button {
+                margin-bottom: 5px;
+                min-width: 70px;
+                font-size: 0.8rem;
+                padding: 4px 8px;
             }
             
             #time-display {
                 width: 100%;
-                text-align: left;
+                text-align: center;
                 margin-top: 5px;
                 order: 3;
+                font-size: 0.8rem;
             }
             
             #progress-container {
                 order: 2;
-                margin-left: 0;
-                margin-right: 0;
+                margin: 5px 0;
                 width: 100%;
+                height: 8px;
             }
             
-            #audio-controls button {
-                margin-bottom: 10px;
-                order: 1;
+            #details {
+                font-size: 0.7rem;
+                max-height: 120px;
+                padding: 8px;
+            }
+            
+            #terminal-input input {
+                font-size: 0.8rem;
+                padding: 4px 4px 4px 15px;
+            }
+            
+            #effects-panel {
+                gap: 8px;
             }
             
             .effect-control {
-                width: calc(50% - 10px);
-                min-width: 100px;
+                width: calc(50% - 8px);
+                min-width: 120px;
+            }
+            
+            .effect-control label {
+                font-size: 0.65rem;
+            }
+            
+            .effect-control input[type="range"] {
+                height: 4px;
+            }
+            
+            .effect-control input[type="range"]::-webkit-slider-thumb {
+                width: 8px;
+                height: 12px;
+            }
+            
+            #controls-toggle {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+                bottom: 5px;
+                right: 5px;
+            }
+            
+            #file-upload-area {
+                width: 90%;
+                height: 250px;
+                padding: 15px;
+            }
+            
+            #file-upload-area p {
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            #file-upload-area button {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            #container {
+                padding: 10px;
+            }
+            
+            #header h1 {
+                font-size: 1rem;
+            }
+            
+            #data-overlay {
+                font-size: 0.65rem;
+            }
+            
+            .effect-control {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            #visualization-mode {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #visualization-mode button {
+                font-size: 0.55rem;
+            }
+            
+            #warning-text {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -1311,9 +1428,6 @@
         // Start the application
         window.addEventListener('load', () => {
             updateTimestamp();
-            // Remove initializeDefaultAudio(); so it doesn't override output.wav
-            // initializeDefaultAudio();
-
             // Add initial terminal messages
             addToTerminal("> CERBERUS RESEARCH INTERFACE INITIALIZED");
             addToTerminal("> Type 'help' for available commands");
@@ -1325,7 +1439,10 @@
             if (!audioContext) {
                 initAudio();
             }
-            audioElement.play().then(() => {
+            // Try to resume audio context before playing
+            (audioContext ? audioContext.resume() : Promise.resolve()).then(() => {
+                return audioElement.play();
+            }).then(() => {
                 playButton.textContent = 'PAUSE';
                 isPlaying = true;
                 lastTime = Date.now();
@@ -1334,6 +1451,23 @@
             }).catch(() => {
                 // Autoplay might be blocked; show play button as usual
                 playButton.textContent = 'PLAY';
+                // Add a one-time user interaction fallback
+                const unlock = () => {
+                    if (!audioContext) initAudio();
+                    audioContext.resume().then(() => {
+                        audioElement.play().then(() => {
+                            playButton.textContent = 'PAUSE';
+                            isPlaying = true;
+                            lastTime = Date.now();
+                            drawVisualizer();
+                            updateProgress();
+                        });
+                    });
+                    document.removeEventListener('click', unlock);
+                    document.removeEventListener('keydown', unlock);
+                };
+                document.addEventListener('click', unlock);
+                document.addEventListener('keydown', unlock);
             });
         });
     </script>
