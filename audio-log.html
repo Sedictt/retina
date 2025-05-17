@@ -614,7 +614,7 @@
         let lastTime = 0;
         let fps = 60;
         let fpsInterval = 1000 / fps;
-        let visualizationMode = 'bars';
+        let visualizationMode = 'wave';
         let particles = [];
         let effectNodes = {};
         
@@ -1311,11 +1311,30 @@
         // Start the application
         window.addEventListener('load', () => {
             updateTimestamp();
-            initializeDefaultAudio();
-            
+            // Remove initializeDefaultAudio(); so it doesn't override output.wav
+            // initializeDefaultAudio();
+
             // Add initial terminal messages
             addToTerminal("> CERBERUS RESEARCH INTERFACE INITIALIZED");
             addToTerminal("> Type 'help' for available commands");
+
+            // Set visualization mode button UI to 'wave'
+            setVisualizationMode('wave');
+
+            // Attempt to auto-play audio (may require user interaction in some browsers)
+            if (!audioContext) {
+                initAudio();
+            }
+            audioElement.play().then(() => {
+                playButton.textContent = 'PAUSE';
+                isPlaying = true;
+                lastTime = Date.now();
+                drawVisualizer();
+                updateProgress();
+            }).catch(() => {
+                // Autoplay might be blocked; show play button as usual
+                playButton.textContent = 'PLAY';
+            });
         });
     </script>
 </body>
