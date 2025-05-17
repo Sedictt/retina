@@ -232,6 +232,120 @@
             opacity: 0;
             transition: opacity 3s;
         }
+        
+        /* Touch optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            #progress-container {
+                height: 16px; /* Larger height for touch targets */
+            }
+            
+            #progress-bar::after {
+                display: block;
+                width: 16px;
+                height: 22px;
+                top: -4px;
+            }
+            
+            #audio-controls button {
+                min-height: 44px; /* Apple's recommended minimum touch target size */
+            }
+            
+            #visualization-mode button {
+                padding: 8px 12px;
+                margin-bottom: 5px;
+            }
+            
+            #terminal-input input {
+                height: 44px;
+        }
+        
+        .effect-control input[type="range"] {
+                height: 12px;
+        }
+        
+        .effect-control input[type="range"]::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+        }
+        
+        #controls-toggle {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Landscape orientation for mobile */
+        @media (max-width: 900px) and (orientation: landscape) {
+            #container {
+                padding: 10px;
+            }
+            
+            #header {
+                margin-bottom: 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            #header h1 {
+                width: 50%;
+                text-align: left;
+                font-size: 1rem;
+            }
+            
+            #status, #timestamp {
+                width: auto;
+            }
+            
+            #visualizer-container {
+                height: 30vh;
+                margin-bottom: 10px;
+            }
+            
+            #details {
+                max-height: 80px;
+            }
+            
+            #effects-panel {
+                flex-direction: row;
+            }
+            
+            .effect-control {
+                width: calc(25% - 8px);
+                min-width: 100px;
+            }
+        }
+        
+        #progress-bar.hover::after,
+        #progress-container:hover #progress-bar::after {
+            display: block;
+        }
+        
+        .touch-device button {
+            min-height: 44px; /* Apple's recommended minimum touch target size */
+        }
+        
+        .touch-device #terminal-input input {
+            font-size: 16px; /* Prevent iOS zoom on focus */
+            height: 44px;
+        }
+        
+        .touch-device #progress-container {
+            height: 14px;
+        }
+        
+        .touch-device .effect-control input[type="range"] {
+            height: 10px;
+        }
+        
+        .touch-device .effect-control input[type="range"]::-webkit-slider-thumb {
+            width: 20px;
+            height: 20px;
+        }
+        
+        #progress-bar.hover::after,
+        #progress-container:hover #progress-bar::after {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -244,40 +358,40 @@
             <div id="timestamps">
                 <div>RECORDED: [REDACTED]</div>
                 <div>RECOVERED: 05.16.2025</div>
-            </div>
+        </div>
         </header>
         
         <div class="main-content">
             <div id="canvas-container">
                 <canvas id="visualizer"></canvas>
-            </div>
-            
+        </div>
+        
             <div id="transcript-container">
                 <div id="transcript"></div>
                 <div id="artifact-note">TRACE IDENTIFIED: segment contains embedded data patterns</div>
-            </div>
-            
+        </div>
+        
             <div id="controls">
                 <button id="play-button">► PLAY RECORDING</button>
                 <div id="timer">TIME: <span id="time-display">00:00</span></div>
-            </div>
-            
-            <div class="retina-warning" id="warning">WARNING: RETINA PROJECT DISCONTINUED. ARTIFACT CONTAINS POTENTIAL MEMETIC HAZARD.</div>
         </div>
-    </div>
-    
+        
+            <div class="retina-warning" id="warning">WARNING: RETINA PROJECT DISCONTINUED. ARTIFACT CONTAINS POTENTIAL MEMETIC HAZARD.</div>
+            </div>
+        </div>
+        
     <footer>
         PROPERTY OF [REDACTED] RESEARCH DIVISION • UNAUTHORIZED ACCESS PROHIBITED
     </footer>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Audio context setup
-            let audioContext;
+        let audioContext;
             let analyser;
-            let dataArray;
-            let source;
-            let isPlaying = false;
+        let dataArray;
+        let source;
+        let isPlaying = false;
             let startTime;
             let timerInterval;
             
@@ -286,14 +400,25 @@
             const canvasCtx = canvas.getContext('2d');
             
             // Adjust canvas size
-            function resizeCanvas() {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-            }
-            
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-            
+        function resizeCanvas() {
+                const pixelRatio = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                
+                canvas.width = rect.width * pixelRatio;
+                canvas.height = rect.height * pixelRatio;
+                
+                canvasCtx.scale(pixelRatio, pixelRatio);
+                
+                // Update visualization if playing
+                if (isPlaying) {
+                    cancelAnimationFrame(animationFrame);
+                    drawVisualizer();
+                }
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
             // Transcript content
             const transcriptContent = [
                 { time: 1, text: "I was just trying to clear my head. We fought. Again. He didn't understand. Or maybe I didn't." },
@@ -309,7 +434,7 @@
             
             // Audio oscillator to simulate sound
             function createOscillator() {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 2048;
                 
@@ -465,22 +590,22 @@
                 const currentTime = (Date.now() - startTime) / 1000;
                 
                 // Draw waveform
-                const sliceWidth = canvas.width / dataArray.length;
-                let x = 0;
+            const sliceWidth = canvas.width / dataArray.length;
+            let x = 0;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
                 
-                for (let i = 0; i < dataArray.length; i++) {
-                    const v = dataArray[i] / 128.0;
-                    const y = v * canvas.height / 2;
-                    
-                    if (i === 0) {
+                if (i === 0) {
                         canvasCtx.moveTo(x, y);
-                    } else {
+                } else {
                         canvasCtx.lineTo(x, y);
-                    }
-                    
-                    x += sliceWidth;
                 }
                 
+                x += sliceWidth;
+            }
+            
                 canvasCtx.lineTo(canvas.width, canvas.height / 2);
                 canvasCtx.stroke();
                 
@@ -491,19 +616,19 @@
                     canvasCtx.beginPath();
                     
                     x = 0;
-                    for (let i = 0; i < dataArray.length; i++) {
+            for (let i = 0; i < dataArray.length; i++) {
                         const v = (dataArray[(i + 50) % dataArray.length]) / 128.0;
                         const y = v * canvas.height / 2 + 10;
-                        
-                        if (i === 0) {
+                
+                if (i === 0) {
                             canvasCtx.moveTo(x, y);
-                        } else {
+                } else {
                             canvasCtx.lineTo(x, y);
-                        }
-                        
-                        x += sliceWidth;
-                    }
-                    
+                }
+                
+                x += sliceWidth;
+            }
+            
                     canvasCtx.stroke();
                 }
                 
@@ -569,7 +694,7 @@
             playButton.addEventListener('click', function() {
                 if (isPlaying) {
                     stopAudio();
-                } else {
+            } else {
                     startAudio();
                 }
             });
@@ -663,10 +788,91 @@
             document.getElementById('transcript-container').addEventListener('mouseover', function() {
                 if (isPlaying && Math.random() < 0.3) {
                     document.getElementById('glitch-overlay').style.opacity = 0.2;
-                    setTimeout(() => {
+                setTimeout(() => {
                         document.getElementById('glitch-overlay').style.opacity = 0.1;
                     }, 200);
                 }
+            });
+            
+            // Handle touch events for the progress bar
+            function handleProgressTouch(e) {
+            e.preventDefault();
+                const touch = e.touches[0];
+                const rect = progressContainer.getBoundingClientRect();
+                const offsetX = touch.clientX - rect.left;
+                const width = rect.width;
+                const duration = audioElement.duration;
+                
+                audioElement.currentTime = (offsetX / width) * duration;
+            }
+            
+            // Set progress when clicking on the progress bar
+            function setProgress(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioElement.duration;
+                audioElement.currentTime = (clickX / width) * duration;
+            }
+            
+            // Add touch events for progress bar
+            progressContainer.addEventListener('touchstart', handleProgressTouch);
+            progressContainer.addEventListener('touchmove', handleProgressTouch);
+            
+            // Add touch feedback to buttons
+            function addTouchFeedback() {
+                const buttons = document.querySelectorAll('button');
+                buttons.forEach(button => {
+                    button.addEventListener('touchstart', function() {
+                        this.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';
+                    });
+                    
+                    button.addEventListener('touchend', function() {
+                        this.style.backgroundColor = '';
+            });
+        });
+        
+                // Check if device supports touch events
+                if ('ontouchstart' in window) {
+                    document.body.classList.add('touch-device');
+                }
+            }
+            
+            // Utility function to debounce resize events
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
+                };
+            }
+            
+            // Improve loading process for mobile
+        window.addEventListener('load', () => {
+            updateTimestamp();
+                
+            // Add initial terminal messages
+            addToTerminal("> CERBERUS RESEARCH INTERFACE INITIALIZED");
+            addToTerminal("> Type 'help' for available commands");
+
+            // Set visualization mode button UI to 'wave'
+            setVisualizationMode('wave');
+                
+                // Initialize touch features
+                addTouchFeedback();
+                
+                // Make sure canvas is properly sized
+                resizeCanvas();
+
+                // Use debounced resize for better performance
+                const debouncedResize = debounce(resizeCanvas, 250);
+                window.addEventListener('resize', debouncedResize);
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(resizeCanvas, 100);
+                });
+
+            // Attempt to auto-play audio (may require user interaction in some browsers)
             });
         });
     </script>
