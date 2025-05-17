@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CERBERUS RESEARCH - PHASE 3 PROTOCOLS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #000;
+            color: #0f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            z-index: 10;
+        }
+        
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+        }
+        
+        #header h1 {
+            font-size: 1.5rem;
+            font-weight: normal;
+            color: #f00;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+        }
+        
+        #status {
+            font-size: 0.9rem;
+            color: #0f0;
+        }
+        
+        #timestamp {
+            font-size: 0.8rem;
+            color: #0f0;
+        }
+        
+        #visualizer-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        #visualizer-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+        }
+        
+        #data-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: rgba(0, 255, 0, 0.8);
+            pointer-events: none;
+            z-index: 20;
+        }
+        
+        .data-value {
+            display: inline-block;
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        .critical {
+            color: #f00;
+            text-shadow: 0 0 3px rgba(255, 0, 0, 0.5);
+            animation: blink 1s infinite;
+        }
+        
+        .warning {
+            color: #ff0;
+            text-shadow: 0 0 3px rgba(255, 255, 0, 0.5);
+        }
+        
+        .stable {
+            color: #0f0;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+        }
+        
+        #details {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            color: #0f0;
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            padding: 10px;
+            position: relative;
+        }
+        
+        #details::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        #details::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        #details::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 0, 0.5);
+        }
+        
+        #terminal-input {
+            position: relative;
+            margin-top: 10px;
+        }
+        
+        #terminal-input input {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            color: #0f0;
+            padding: 5px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+        }
+        
+        #terminal-input input::placeholder {
+            color: rgba(0, 255, 0, 0.3);
+        }
+        
+        #terminal-input::before {
+            content: ">";
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            color: #0f0;
+            z-index: 1;
+        }
+        
+        #terminal-input input {
+            padding-left: 15px;
+        }
+        
+        #audio-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            border-top: 1px solid #0f0;
+            padding-top: 10px;
+        }
+        
+        #audio-controls button {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            min-width: 80px;
+        }
+        
+        #audio-controls button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        
+        #audio-controls button:active {
+            background-color: rgba(0, 255, 0, 0.4);
+        }
+        
+        #audio-controls button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5);
+        }
+        
+        #progress-container {
+            flex-grow: 1;
+            margin: 0 10px;
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        #progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: rgba(255, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        #progress-bar::after {
+            content: "";
+            position: absolute;
+            right: -5px;
+            top: -3px;
+            width: 10px;
+            height: 16px;
+            background-color: rgba(255, 0, 0, 0.8);
+            display: none;
+        }
+        
+        #progress-container:hover #progress-bar::after {
+            display: block;
+        }
+        
+        #time-display {
+            font-size: 0.8rem;
+            width: 120px;
+            text-align: right;
+        }
+        
+        #grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        #scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(0, 255, 0, 0.7);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            animation: scan 5s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+        
+        .glitch {
+            animation: glitch 0.2s linear infinite;
+        }
+        
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                transform: translate(2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+        
+        .noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92U2hXHF/C1M8uP/ZtYdiuj26UdAdQQSXQErwSOMzt/XWRWAz5GuSBIkwG1H3FabJ2OsUOUhGC6tK4EMtJO0ttC6IBD3kM0ve0tJwMdSfjZo+EEISaeTr9P3wYrGjXqyC1krcKdhMpxEnt5JetoulscpyzhXN5FRpuPHvbeQaKxFAEB6EN+cYN6xD7RYGpXpNndMmZgM5Dcs3YSNFDHUo2LGfZuukSWyUYirJAdYbF3MfqEKmjM+I2EfhA94iG3L7uKrR+GdWD73ydlIB+6hgref1QTlmgmbM3/LeX5GI1Ux1RWpgxpLuZ2+I+IjzZ8wqE4nilvQdkUdfhzI5QDWy+kw5Wgg2pGpeEVeCCA7b85BO3F9DzxB3cdqvBzWcmzbyMiqhzuYqtHRVG2y4x+KOlnyqla8AoWWpuBoYRxzXrfKuILl6SfiWCbjxoZJUaCBj1CjH7GIaDbc9kqBY3W/Rgjda1iqQcOJu2WW+76pZC9QG7M00dffe9hNnseupFL53r8F7YHSwJWUKP2q+k7RdsxyOB11n0xtOvnW4irMMFNV4H0uqwS5ExsmP9AxbDTc9JwgneAT5vTiUSm1E7BSflSt3bfa1tv8Di3R8n3Af7MNWzs49hmauE2wP+ttrq+AsWpFG2awvsuOqbipWHgtuvuaAE+A1Z/7gC9hesnr+7wqCwG8c5yAg3AL1fm8T9AZtp/bbJGwl1pNrE7RuOX7PeMRUERVaPpEs+yqeoSmuOlokqw49pgomjLeh7icHNlG19yjs6XXOMedYm5xH2YxpV2tc0Ro2jJfxC50ApuxGob7lMsxfTbeUv07TyYxpeLucEH1gNd4IKH2LAg5TdVhlCafZvpskfncCfx8pOhJzd76bJWeYFnFciwcYfubRc12Ip/ppIhA1/mSZ/RxjFDrJC5xifFjJpY2Xl5zXdguFqYyTR1zSp1Y9p+tktDYYSNflcxI0iyO4TPBdlRcpeqjK/piF5bklq77VSEaA+z8qmJTFzIWiitbnzR794USKBUaT0NTEsVjZqLaFVqJoPN9ODG70IPbfBHKK+/q/AWR0tJzYHRULOa4MP+W/HfGadZUbfw177G7j/OGbIs8TahLyynl4X4RinF793Oz+BU0saXtUHrVBFT/DnA3ctNPoGbs4hRIjTok8i+algT1lTHi4SxFvONKNrgQFAq2/gFnWMXgwffgYMJpiKYkmW3tTg3ZQ9Jq+f8XN+A5eeUKHWvJWJ2sgJ1Sop+wwhqFVijqWaJhwtD8MNlSBeWNNWTa5Z5kPZw5+LbVT99wqTdx29lMUH4OIG/D86ruKEauBjvH5xy6um/Sfj7ei6UUVk4AIl3MyD4MSSTOFgSwsH/QJWaQ5as7ZcmgBZkzjjU1UrQ74ci1gWBCSGHtuV1H2mhSnO3Wp/3fEV5a+4wz//6qy8JxjZsmxxy5+4w9CDNJY09T072iKG0EnOS0arEYgXqYnXcYHwjTtUNAcMelOd4xpkoqiTYICWFq0JSiPfPDQdnt+4/wuqcXY47QILbgAAAABJRU5ErkJggg==");
+            opacity: 0.03;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        #warning-text {
+            position: absolute;
+            top: 6rem;
+            right: 1rem;
+            color: #f00;
+            font-size: 0.8rem;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
+        #visualization-mode {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 20;
+        }
+        
+        #visualization-mode button {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 3px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        #visualization-mode button.active {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+        
+        #effects-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .effect-control {
+            display: flex;
+            flex-direction: column;
+            width: calc(25% - 10px);
+            min-width: 150px;
+        }
+        
+        .effect-control label {
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+        
+        .effect-control input[type="range"] {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            height: 5px;
+            -webkit-appearance: none;
+        }
+        
+        .effect-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 15px;
+            background-color: rgba(0, 255, 0, 0.8);
+        }
+        
+        #controls-toggle {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 3px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 20;
+        }
+        
+        #file-upload-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        #file-upload-container.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        #file-upload-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            max-width: 500px;
+            height: 300px;
+            border: 2px dashed rgba(0, 255, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        #file-upload-area p {
+            margin-bottom: 20px;
+        }
+        
+        #file-upload-area button {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        #file-upload-area button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            #header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            #header h1 {
+                margin-bottom: 5px;
+                font-size: 1.2rem;
+                width: 100%;
+                text-align: center;
+            }
+            
+            #status, #timestamp {
+                font-size: 0.8rem;
+                width: 100%;
+                text-align: center;
+            }
+            
+            #data-overlay {
+                font-size: 0.7rem;
+                padding: 5px;
+                background-color: rgba(0, 0, 0, 0.7);
+                border-radius: 4px;
+            }
+            
+            #visualization-mode {
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                justify-content: flex-end;
+            }
+            
+            #visualization-mode button {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+                margin-left: 0;
+            }
+            
+            #audio-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            
+            #audio-controls button {
+                margin-bottom: 5px;
+                min-width: 70px;
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+            
+            #time-display {
+                width: 100%;
+                text-align: center;
+                margin-top: 5px;
+                order: 3;
+                font-size: 0.8rem;
+            }
+            
+            #progress-container {
+                order: 2;
+                margin: 5px 0;
+                width: 100%;
+                height: 8px;
+            }
+            
+            #details {
+                font-size: 0.7rem;
+                max-height: 120px;
+                padding: 8px;
+            }
+            
+            #terminal-input input {
+                font-size: 0.8rem;
+                padding: 4px 4px 4px 15px;
+            }
+            
+            #effects-panel {
+                gap: 8px;
+            }
+            
+            .effect-control {
+                width: calc(50% - 8px);
+                min-width: 120px;
+            }
+            
+            .effect-control label {
+                font-size: 0.65rem;
+            }
+            
+            .effect-control input[type="range"] {
+                height: 4px;
+            }
+            
+            .effect-control input[type="range"]::-webkit-slider-thumb {
+                width: 8px;
+                height: 12px;
+            }
+            
+            #controls-toggle {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+                bottom: 5px;
+                right: 5px;
+            }
+            
+            #file-upload-area {
+                width: 90%;
+                height: 250px;
+                padding: 15px;
+            }
+            
+            #file-upload-area p {
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            #file-upload-area button {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            #container {
+                padding: 10px;
+            }
+            
+            #header h1 {
+                font-size: 1rem;
+            }
+            
+            #data-overlay {
+                font-size: 0.65rem;
+            }
+            
+            .effect-control {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            #visualization-mode {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #visualization-mode button {
+                font-size: 0.55rem;
+            }
+            
+            #warning-text {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="grid-overlay"></div>
+    <div id="scan-line"></div>
+    <div class="noise"></div>
+    
+    <div id="container">
+        <div id="header">
+            <h1>CERBERUS RESEARCH - PHASE 3</h1>
+            <div id="status">STATUS: <span id="status-value">ACTIVE</span></div>
+            <div id="timestamp"></div>
+        </div>
+        
+        <div id="warning-text">WARNING: CLASSIFIED INFORMATION</div>
+        
+        <div id="visualizer-container">
+            <canvas id="visualizer-canvas"></canvas>
+            <div id="visualization-mode">
+                <button data-mode="bars" class="active">BARS</button>
+                <button data-mode="wave">WAVE</button>
+                <button data-mode="circle">CIRCLE</button>
+                <button data-mode="particles">PARTICLES</button>
+            </div>
+            <div id="data-overlay">
+                <div>NEURAL SYNCHRONIZATION: <span id="sync-value" class="data-value stable">94%</span></div>
+                <div>COGNITIVE STABILITY: <span id="stability-value" class="data-value warning">MONITORING</span></div>
+                <div>IDENTITY RETENTION: <span id="retention-value" class="data-value critical">COMPROMISED</span></div>
+                <div>SIGNAL CLARITY: <span id="clarity-value" class="data-value stable">87%</span></div>
+            </div>
+        </div>
+        
+        <div id="details">
+            > SUBJECT: Phase 3, Operational Transfer Protocol. Initiating core sequence.
+            > All subjects undergoing displacement have been confirmed. Transition windows stabilized.
+            > For Phase 3B, data sync between primary and secondary matrices is at 94%.
+            > Recalibration expected. The neural synchronization pattern continues to exhibit minor variances in secondary subjects.
+            > Significant discrepancies to be monitored. Current parameters: stable.
+            > Operational risks include potential cognitive fragmentation and identity dissociation.
+            > Post-session analysis remains inconclusive on long-term memory retention.
+            > Further integration of Test Group B—no anomalies reported in standard procedures.
+            > Secondary subjects show a marked divergence in identity retention. Continuing investigations.
+            > PRIME OBJECTIVE: Operational Efficiency—Memory Realignment
+        </div>
+        
+        <div id="terminal-input">
+            <input type="text" placeholder="Enter command..." aria-label="Command terminal">
+        </div>
+        
+        <div id="audio-controls">
+            <button id="play-button" aria-label="Play audio">PLAY</button>
+            <button id="upload-button" aria-label="Upload audio file">UPLOAD</button>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="time-display">00:00 / 00:00</div>
+        </div>
+        
+        <button id="controls-toggle">EFFECTS ▼</button>
+        
+        <div id="effects-panel" style="display: none;">
+            <div class="effect-control">
+                <label for="gain">GAIN</label>
+                <input type="range" id="gain" min="0" max="2" step="0.1" value="1">
+            </div>
+            <div class="effect-control">
+                <label for="frequency">FREQUENCY SHIFT</label>
+                <input type="range" id="frequency" min="0" max="2" step="0.1" value="1">
+            </div>
+            <div class="effect-control">
+                <label for="distortion">DISTORTION</label>
+                <input type="range" id="distortion" min="0" max="100" step="1" value="0">
+            </div>
+            <div class="effect-control">
+                <label for="delay">DELAY</label>
+                <input type="range" id="delay" min="0" max="1" step="0.1" value="0">
+            </div>
+        </div>
+    </div>
+
+    <div id="file-upload-container">
+        <div id="file-upload-area">
+            <p>DRAG AUDIO FILE HERE<br>OR</p>
+            <button id="select-file-button">SELECT FILE</button>
+        </div>
+    </div>
+
+    <audio id="audio" preload="auto">
+        <source src="output.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        // DOM elements
+        const audioElement = document.getElementById('audio');
+        const playButton = document.getElementById('play-button');
+        const uploadButton = document.getElementById('upload-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('time-display');
+        const canvas = document.getElementById('visualizer-canvas');
+        const ctx = canvas.getContext('2d');
+        const timestampElement = document.getElementById('timestamp');
+        const syncValueElement = document.getElementById('sync-value');
+        const stabilityValueElement = document.getElementById('stability-value');
+        const retentionValueElement = document.getElementById('retention-value');
+        const clarityValueElement = document.getElementById('clarity-value');
+        const statusValueElement = document.getElementById('status-value');
+        const detailsElement = document.getElementById('details');
+        const terminalInput = document.querySelector('#terminal-input input');
+        const controlsToggle = document.getElementById('controls-toggle');
+        const effectsPanel = document.getElementById('effects-panel');
+        const fileUploadContainer = document.getElementById('file-upload-container');
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const selectFileButton = document.getElementById('select-file-button');
+        const visualizationModeButtons = document.querySelectorAll('#visualization-mode button');
+        
+        // Global variables
+        let audioContext;
+        let analyzer;
+        let dataArray;
+        let source;
+        let animationFrame;
+        let isPlaying = false;
+        let lastTime = 0;
+        let fps = 60;
+        let fpsInterval = 1000 / fps;
+        let visualizationMode = 'wave';
+        let particles = [];
+        let effectNodes = {};
+        
+        // Terminal commands
+        const commands = {
+            'help': 'Available commands: help, status, info, clear, sync, reset',
+            'status': 'Primary systems operational. Neural sync stable at 94%.',
+            'info': 'ERERUS Phase 3 - Neural synchronization protocol engaged.',
+            'clear': function() {
+                detailsElement.innerHTML = '> Terminal cleared.';
+                return '';
+            },
+            'sync': function() {
+                const randomValue = (92 + Math.random() * 6).toFixed(1);
+                syncValueElement.textContent = `${randomValue}%`;
+                return `Neural synchronization adjusted to ${randomValue}%.`;
+            },
+            'reset': function() {
+                triggerGlitch();
+                setTimeout(() => {
+                    statusValueElement.textContent = 'RESETTING';
+                    statusValueElement.classList.add('critical');
+                }, 500);
+                setTimeout(() => {
+                    statusValueElement.textContent = 'ACTIVE';
+                    statusValueElement.classList.remove('critical');
+                }, 3000);
+                return 'System reset initiated. Parameters recalibrating...';
+            }
+        };
+        
+        // Set up canvas size
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // Initialize audio context
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    setupAudioNodes();
+                } catch (e) {
+                    console.error("Web Audio API not supported:", e);
+                    alert("Your browser doesn't support Web Audio API.");
+                }
+            }
+        }
+        
+        // Setup audio processing nodes
+        function setupAudioNodes() {
+            // Create analyzer
+            analyzer = audioContext.createAnalyser();
+            analyzer.fftSize = 2048;
+            const bufferLength = analyzer.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            
+            // Create source node
+            source = audioContext.createMediaElementSource(audioElement);
+            
+            // Create effect nodes
+            effectNodes.gain = audioContext.createGain();
+            effectNodes.biquadFilter = audioContext.createBiquadFilter();
+            effectNodes.distortion = audioContext.createWaveShaper();
+            effectNodes.delay = audioContext.createDelay();
+            effectNodes.feedback = audioContext.createGain();
+            
+            // Configure effect nodes
+            effectNodes.biquadFilter.type = 'lowshelf';
+            effectNodes.biquadFilter.frequency.value = 1000;
+            effectNodes.biquadFilter.gain.value = 0;
+            
+            effectNodes.gain.gain.value = 1;
+            
+            effectNodes.distortion.curve = makeDistortionCurve(0);
+            effectNodes.distortion.oversample = '4x';
+            
+            effectNodes.delay.delayTime.value = 0;
+            effectNodes.feedback.gain.value = 0.3;
+            
+            // Connect nodes
+            source.connect(effectNodes.gain);
+            effectNodes.gain.connect(effectNodes.biquadFilter);
+            effectNodes.biquadFilter.connect(effectNodes.distortion);
+            effectNodes.distortion.connect(analyzer);
+            effectNodes.distortion.connect(effectNodes.delay);
+            effectNodes.delay.connect(effectNodes.feedback);
+            effectNodes.feedback.connect(effectNodes.delay);
+            effectNodes.delay.connect(analyzer);
+            analyzer.connect(audioContext.destination);
+        }
+        
+        // Create distortion curve
+        function makeDistortionCurve(amount) {
+            const k = amount * 100;
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+            
+            for (let i = 0; i < n_samples; ++i) {
+                const x = i * 2 / n_samples - 1;
+                curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+            }
+            
+            return curve;
+        }
+        
+        // Draw visualizer based on current mode
+        function drawVisualizer() {
+            if (!audioContext || !isPlaying) return;
+            
+            // Throttle frame rate for performance
+            const now = Date.now();
+            const elapsed = now - lastTime;
+            
+            if (elapsed > fpsInterval) {
+                lastTime = now - (elapsed % fpsInterval);
+                
+                analyzer.getByteFrequencyData(dataArray);
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                switch (visualizationMode) {
+                    case 'bars':
+                        drawBars();
+                        break;
+                    case 'wave':
+                        drawWave();
+                        break;
+                    case 'circle':
+                        drawCircle();
+                        break;
+                    case 'particles':
+                        drawParticles();
+                        break;
+                }
+            }
+            
+            // Update data overlay with random fluctuations
+            if (Math.random() < 0.03) {
+                updateDataOverlay();
+            }
+            
+            // Apply random glitch effect
+            if (Math.random() < 0.01) {
+                triggerGlitch();
+            }
+            
+            animationFrame = requestAnimationFrame(drawVisualizer);
+        }
+        
+        // Draw frequency bars
+        function drawBars() {
+            const barWidth = canvas.width / dataArray.length * 5;
+            const centerY = canvas.height / 2;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const barHeight = dataArray[i] * 0.5;
+                
+                // Top bars (red)
+                const x = i * barWidth;
+                ctx.fillStyle = `rgba(255, 0, 0, ${dataArray[i] / 255 * 0.8})`;
+                ctx.fillRect(x, centerY - barHeight, barWidth - 1, barHeight);
+                
+                // Bottom bars (green)
+                ctx.fillStyle = `rgba(0, 255, 0, ${dataArray[i] / 255 * 0.8})`;
+                ctx.fillRect(x, centerY, barWidth - 1, barHeight);
+            }
+        }
+        
+        // Draw oscilloscope wave
+        function drawWave() {
+            analyzer.getByteTimeDomainData(dataArray);
+            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+            ctx.beginPath();
+            
+            const sliceWidth = canvas.width / dataArray.length;
+            let x = 0;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                x += sliceWidth;
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+            
+            // Add second wave with offset for effect
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
+            ctx.beginPath();
+            x = 0;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2 + 5;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                x += sliceWidth;
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+        
+        // Draw circular visualizer
+        function drawCircle() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) * 0.8;
+            
+            // Draw base circle
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Draw frequency data as circular bars
+            const barCount = 180;
+            const step = Math.floor(dataArray.length / barCount);
+            
+            for (let i = 0; i < barCount; i++) {
+                const value = dataArray[i * step];
+                const barHeight = value * 0.5;
+                const angle = i * (Math.PI * 2 / barCount);
+                
+                const x1 = centerX + Math.cos(angle) * radius;
+                const y1 = centerY + Math.sin(angle) * radius;
+                const x2 = centerX + Math.cos(angle) * (radius + barHeight);
+                const y2 = centerY + Math.sin(angle) * (radius + barHeight);
+                
+                // Gradient color based on frequency
+                const colorIntensity = value / 255;
+                const r = Math.floor(255 * colorIntensity);
+                const g = Math.floor(100 + 155 * (1 - colorIntensity));
+                
+                ctx.strokeStyle = `rgba(${r}, ${g}, 0, 0.8)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            
+            // Draw center point
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Particle system
+        class Particle {
+            constructor(x, y, size, color, speed) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.speedX = (Math.random() - 0.5) * speed;
+                this.speedY = (Math.random() - 0.5) * speed;
+                this.life = 100;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 1;
+            }
+            
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life / 100;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Draw particles visualization
+        function drawParticles() {
+            // Create new particles based on audio data
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const avgAudio = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+            
+            if (Math.random() < avgAudio / 255 * 0.3) {
+                const size = 2 + Math.random() * 3;
+                const intensity = avgAudio / 255;
+                const color = `rgba(${Math.floor(intensity * 255)}, ${Math.floor((1 - intensity) * 255)}, 0, 0.8)`;
+                const speed = 1 + avgAudio / 255 * 5;
+                
+                particles.push(new Particle(centerX, centerY, size, color, speed));
+                
+                // Limit particles for performance
+                if (particles.length > 200) {
+                    particles.splice(0, particles.length - 200);
+                }
+            }
+            
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw(ctx);
+                
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+        
+        // Update data overlay with random fluctuations
+        function updateDataOverlay() {
+            const syncValue = 92 + Math.random() * 4;
+            syncValueElement.textContent = `${syncValue.toFixed(1)}%`;
+            
+            const clarityValue = 85 + Math.random() * 10;
+            clarityValueElement.textContent = `${clarityValue.toFixed(1)}%`;
+            
+            // Update status classes based on values
+            updateStatusClasses(syncValueElement, syncValue, 93);
+            updateStatusClasses(clarityValueElement, clarityValue, 85);
+            
+            if (Math.random() < 0.2) {
+                const stabilityStates = ['STABLE', 'MONITORING', 'FLUCTUATING', 'CAUTION'];
+                const stabilityIndex = Math.floor(Math.random() * stabilityStates.length);
+                stabilityValueElement.textContent = stabilityStates[stabilityIndex];
+                
+                // Update status classes for stability
+                updateStatusClassesByIndex(stabilityValueElement, stabilityIndex, 1);
+                
+                if (Math.random() < 0.3) {
+                    const retentionStates = ['COMPROMISED', 'DIMINISHING', 'CRITICAL', 'FRAGMENTING'];
+                    const retentionIndex = Math.floor(Math.random() * retentionStates.length);
+                    retentionValueElement.textContent = retentionStates[retentionIndex];
+                    
+                    // Update status classes for retention (inverted logic - higher index is worse)
+                    updateStatusClassesByIndex(retentionValueElement, 3 - retentionIndex, 1);
+                }
+            }
+        }
+        
+        // Update status classes based on numerical value
+        function updateStatusClasses(element, value, threshold) {
+            element.classList.remove('stable', 'warning', 'critical');
+            
+            if (value >= threshold) {
+                element.classList.add('stable');
+            } else if (value >= threshold - 5) {
+                element.classList.add('warning');
+            } else {
+                element.classList.add('critical');
+            }
+        }
+        
+        // Update status classes based on index value
+        function updateStatusClassesByIndex(element, index, threshold) {
+            element.classList.remove('stable', 'warning', 'critical');
+            
+            if (index <= threshold) {
+                element.classList.add('stable');
+            } else if (index <= threshold + 1) {
+                element.classList.add('warning');
+            } else {
+                element.classList.add('critical');
+            }
+        }
+        
+        // Trigger glitch effect
+        function triggerGlitch() {
+            document.body.classList.add('glitch');
+            setTimeout(() => {
+                document.body.classList.remove('glitch');
+            }, 200);
+        }
+        
+        // Update the timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const formattedTime = now.toLocaleTimeString('en-US', { hour12: false });
+            const formattedDate = now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            timestampElement.textContent = `${formattedDate} ${formattedTime}`;
+            
+            setTimeout(updateTimestamp, 1000);
+        }
+        
+        // Update progress bar and time display
+        function updateProgress() {
+            if (!isPlaying) return;
+            
+            const currentTime = audioElement.currentTime;
+            const duration = audioElement.duration || 0;
+            const progressPercent = (currentTime / duration) * 100;
+            
+            progressBar.style.width = `${progressPercent}%`;
+            
+            const formatTime = (time) => {
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60);
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+            
+            requestAnimationFrame(updateProgress);
+        }
+        
+        // Play/pause audio
+        function togglePlay() {
+            if (!audioContext) {
+                initAudio();
+            }
+            
+            if (audioElement.paused) {
+                audioContext.resume().then(() => {
+                    audioElement.play();
+                    playButton.textContent = 'PAUSE';
+                    isPlaying = true;
+                    lastTime = Date.now();
+                    drawVisualizer();
+                    updateProgress();
+                });
+            } else {
+                audioElement.pause();
+                playButton.textContent = 'PLAY';
+                isPlaying = false;
+                cancelAnimationFrame(animationFrame);
+            }
+        }
+        
+        // Set progress when clicking on the progress bar
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioElement.duration;
+            audioElement.currentTime = (clickX / width) * duration;
+        }
+        
+        // Load audio file
+        function loadAudioFile(file) {
+            if (file) {
+                const url = URL.createObjectURL(file);
+                audioElement.src = url;
+                
+                // Reset state
+                if (isPlaying) {
+                    isPlaying = false;
+                    cancelAnimationFrame(animationFrame);
+                }
+                playButton.textContent = 'PLAY';
+                
+                // Add file info to terminal
+                addToTerminal(`> File loaded: ${file.name}`);
+            }
+        }
+        
+        // Show file upload dialog
+        function showFileUpload() {
+            fileUploadContainer.classList.add('active');
+        }
+        
+        // Hide file upload dialog
+        function hideFileUpload() {
+            fileUploadContainer.classList.remove('active');
+        }
+        
+        // Add text to terminal
+        function addToTerminal(text) {
+            const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+            detailsElement.innerHTML += `\n[${timestamp}] ${text}`;
+            detailsElement.scrollTop = detailsElement.scrollHeight;
+        }
+        
+        // Process terminal command
+        function processCommand(command) {
+            if (!command) return;
+            
+            const cmd = command.toLowerCase().trim();
+            addToTerminal(`> ${command}`);
+            
+            if (commands[cmd]) {
+                const response = typeof commands[cmd] === 'function' ? commands[cmd]() : commands[cmd];
+                if (response) {
+                    addToTerminal(response);
+                }
+            } else {
+                addToTerminal('Command not recognized. Type "help" for available commands.');
+            }
+        }
+        
+        // Set visualization mode
+        function setVisualizationMode(mode) {
+            visualizationMode = mode;
+            
+            // Update active button
+            visualizationModeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.mode === mode);
+            });
+            
+            // Clear particles when switching modes
+            if (mode !== 'particles') {
+                particles = [];
+            }
+        }
+        
+        // Update audio effects
+        function updateEffects() {
+            const gainValue = document.getElementById('gain').value;
+            const frequencyValue = document.getElementById('frequency').value;
+            const distortionValue = document.getElementById('distortion').value;
+            const delayValue = document.getElementById('delay').value;
+            
+            effectNodes.gain.gain.value = gainValue;
+            effectNodes.biquadFilter.frequency.value = 1000 * frequencyValue;
+            effectNodes.distortion.curve = makeDistortionCurve(distortionValue);
+            effectNodes.delay.delayTime.value = delayValue * 0.5;
+        }
+        
+        // Create default audio blob
+        function createDefaultAudioBlob() {
+            try {
+                const tempAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = tempAudioContext.createOscillator();
+                const gainNode = tempAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(tempAudioContext.destination);
+                
+                oscillator.frequency.value = 440;
+                gainNode.gain.value = 0.5;
+                
+                oscillator.start();
+                oscillator.stop(1);
+                
+                const stream = tempAudioContext.createMediaStreamDestination().stream;
+                const mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.start();
+                
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 1000);
+                
+                return new Promise(resolve => {
+                    mediaRecorder.ondataavailable = (e) => {
+                        resolve(e.data);
+                    };
+                });
+            } catch (err) {
+                console.error("Could not create default audio:", err);
+                return Promise.reject(err);
+            }
+        }
+        
+        // Initialize audio with a default silent blob
+        async function initializeDefaultAudio() {
+            try {
+                const blob = await createDefaultAudioBlob();
+                const url = URL.createObjectURL(blob);
+                audioElement.src = url;
+                addToTerminal("> System initialized with default audio signal");
+            } catch (err) {
+                console.error("Audio initialization failed:", err);
+                addToTerminal("> Audio system initialization failed. Please upload audio file.");
+            }
+        }
+        
+        // Event listeners
+        playButton.addEventListener('click', togglePlay);
+        uploadButton.addEventListener('click', showFileUpload);
+        progressContainer.addEventListener('click', setProgress);
+        
+        // File upload event listeners
+        selectFileButton.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'audio/*';
+            fileInput.style.display = 'none';
+            document.body.appendChild(fileInput);
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadAudioFile(file);
+                    hideFileUpload();
+                }
+                document.body.removeChild(fileInput);
+            });
+            
+            fileInput.click();
+        });
+        
+        // Close upload dialog when clicking outside
+        fileUploadContainer.addEventListener('click', (e) => {
+            if (e.target === fileUploadContainer) {
+                hideFileUpload();
+            }
+        });
+        
+        // Drag and drop for file upload area
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.borderColor = 'rgba(0, 255, 0, 0.8)';
+        });
+        
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.style.borderColor = 'rgba(0, 255, 0, 0.5)';
+        });
+        
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.borderColor = 'rgba(0, 255, 0, 0.5)';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('audio/')) {
+                loadAudioFile(file);
+                hideFileUpload();
+            } else {
+                addToTerminal("> Error: Invalid file type. Please upload audio files only.");
+            }
+        });
+        
+        // Terminal input
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = terminalInput.value;
+                processCommand(command);
+                terminalInput.value = '';
+            }
+        });
+        
+        // Audio ended event
+        audioElement.addEventListener('ended', () => {
+            playButton.textContent = 'PLAY';
+            isPlaying = false;
+            cancelAnimationFrame(animationFrame);
+        });
+        
+        // Controls toggle
+        controlsToggle.addEventListener('click', () => {
+            const isVisible = effectsPanel.style.display !== 'none';
+            effectsPanel.style.display = isVisible ? 'none' : 'flex';
+            controlsToggle.textContent = isVisible ? 'EFFECTS ▼' : 'EFFECTS ▲';
+        });
+        
+        // Effect controls
+        document.querySelectorAll('.effect-control input').forEach(input => {
+            input.addEventListener('input', updateEffects);
+        });
+        
+        // Visualization mode buttons
+        visualizationModeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                setVisualizationMode(button.dataset.mode);
+            });
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Space to play/pause
+            if (e.code === 'Space' && document.activeElement !== terminalInput) {
+                e.preventDefault();
+                togglePlay();
+            }
+            // Escape to close upload dialog
+            if (e.key === 'Escape' && fileUploadContainer.classList.contains('active')) {
+                hideFileUpload();
+            }
+        });
+        
+        // Start the application
+        window.addEventListener('load', () => {
+            updateTimestamp();
+            // Add initial terminal messages
+            addToTerminal("> CERBERUS RESEARCH INTERFACE INITIALIZED");
+            addToTerminal("> Type 'help' for available commands");
+
+            // Set visualization mode button UI to 'wave'
+            setVisualizationMode('wave');
+
+            // Attempt to auto-play audio (may require user interaction in some browsers)
+            if (!audioContext) {
+                initAudio();
+            }
+            // Try to resume audio context before playing
+            (audioContext ? audioContext.resume() : Promise.resolve()).then(() => {
+                return audioElement.play();
+            }).then(() => {
+                playButton.textContent = 'PAUSE';
+                isPlaying = true;
+                lastTime = Date.now();
+                drawVisualizer();
+                updateProgress();
+            }).catch(() => {
+                // Autoplay might be blocked; show play button as usual
+                playButton.textContent = 'PLAY';
+                // Add a one-time user interaction fallback
+                const unlock = () => {
+                    if (!audioContext) initAudio();
+                    audioContext.resume().then(() => {
+                        audioElement.play().then(() => {
+                            playButton.textContent = 'PAUSE';
+                            isPlaying = true;
+                            lastTime = Date.now();
+                            drawVisualizer();
+                            updateProgress();
+                        });
+                    });
+                    document.removeEventListener('click', unlock);
+                    document.removeEventListener('keydown', unlock);
+                };
+                document.addEventListener('click', unlock);
+                document.addEventListener('keydown', unlock);
+            });
+        });
+    </script>
+</body>
+</html>
